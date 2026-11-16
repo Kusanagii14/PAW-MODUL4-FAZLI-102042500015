@@ -65,7 +65,53 @@
                     </div>
 
                     {{-- TODO 8: Tampilkan gambar sampul saat ini ($buku->cover) dan sediakan input file untuk mengganti sampul --}}
+                    <form action="{{ route('buku.update', $buku->id) }}" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    @method('PUT')
+                    <!-- Input judul, penulis, penerbit, tahun_terbit, stok -->
 
+                    <div class="mb-3">
+                        <label class="form-label d-block fw-semibold">Sampul Saat Ini</label>
+                        @if($buku->cover)
+                            <img src="{{ asset('storage/' . $buku->cover) }}" alt="{{ $buku->judul }}" class="img-thumbnail mb-2" style="max-height: 160px;">
+                        @else
+                            <span class="text-muted d-block mb-2">Belum ada sampul</span>
+                        @endif
+
+                        <label for="cover" class="form-label fw-semibold">Ganti Sampul (Opsional)</label>
+                        <input type="file"
+                            class="form-control @error('cover') is-invalid @enderror"
+                            id="cover"
+                            name="cover"
+                            accept="image/jpeg,image/png,image/jpg"
+                            onchange="previewEditImage(event)">
+                        @error('cover')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                        <small class="text-muted">Biarkan kosong jika tidak ingin mengubah sampul. Format: JPG, JPEG, PNG. Maks: 2 MB.</small>
+
+                        <div class="mt-2">
+                            <img id="editImagePreview" src="#" alt="Pratinjau Sampul Baru" class="img-thumbnail d-none" style="max-height: 160px;">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Perbarui Buku</button>
+                </form>
+
+                <script>
+                function previewEditImage(event) {
+                    const input = event.target;
+                    if (input.files && input.files[0]) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            const preview = document.getElementById('editImagePreview');
+                            preview.src = e.target.result;
+                            preview.classList.remove('d-none');
+                        };
+                        reader.readAsDataURL(input.files[0]);
+                    }
+                }
+                </script>
                     <div class="d-flex justify-content-end gap-2">
                         <a href="{{ route('buku.index') }}" class="btn btn-light border px-4">Batal</a>
                         <button type="submit" class="btn btn-primary px-4">

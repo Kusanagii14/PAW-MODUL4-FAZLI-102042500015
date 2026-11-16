@@ -16,6 +16,44 @@
         <div class="card shadow-sm">
             <div class="card-body p-4">
                 {{-- TODO 7: Tambahkan atribut enctype="multipart/form-data" pada form di bawah ini --}}
+                <form action="{{ route('buku.store') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+
+                <div class="mb-3">
+                    <label for="cover" class="form-label fw-semibold">Sampul Buku (Opsional)</label>
+                    <input type="file"
+                        class="form-control @error('cover') is-invalid @enderror"
+                        id="cover"
+                        name="cover"
+                        accept="image/jpeg,image/png,image/jpg"
+                        onchange="previewImage(event)">
+                    @error('cover')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                    <small class="text-muted">Format: JPG, JPEG, PNG. Maksimal: 2 MB.</small>
+
+                    <div class="mt-2">
+                        <img id="imagePreview" src="#" alt="Pratinjau Sampul" class="img-thumbnail d-none" style="max-height: 160px;">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Simpan Buku</button>
+            </form>
+
+            <script>
+            function previewImage(event) {
+                const input = event.target;
+                if (input.files && input.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const preview = document.getElementById('imagePreview');
+                        preview.src = e.target.result;
+                        preview.classList.remove('d-none');
+                    };
+                    reader.readAsDataURL(input.files[0]);
+                }
+            }
+            </script>
                 <form action="{{ route('buku.store') }}" method="POST">
                     @csrf
 
